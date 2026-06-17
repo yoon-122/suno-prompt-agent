@@ -75,6 +75,48 @@
             <button type="button" class="segment" data-value="4">4분</button>
           </div>
         </div>
+
+        <div class="option-row">
+          <span class="option-label">곡 흐름</span>
+          <div class="segmented" id="structure-toggle">
+            <button type="button" class="segment active" data-value="off">자유 구성</button>
+            <button type="button" class="segment" data-value="on">🎭 기승전결 구성</button>
+          </div>
+        </div>
+        <p class="option-desc" id="structure-desc" hidden>
+          15곡을 기(1-4번) · 승(5-8번) · 전(9-12번) · 결(13-15번) 흐름으로 나눠 플레이리스트 전체가
+          자연스럽게 이어지도록 프롬프트를 구성해요.
+        </p>
+      </section>
+
+      <section class="theme-options-section">
+        <h2>🎨 테마 확장 옵션 <span class="option-optional">(선택)</span></h2>
+
+        <div class="option-row">
+          <span class="option-label">주 악기</span>
+          <div class="chip-group" id="instrument-chips"></div>
+        </div>
+
+        <div class="option-row">
+          <span class="option-label">레퍼런스 장르</span>
+          <div class="chip-group" id="genre-chips"></div>
+        </div>
+
+        <div class="option-row">
+          <span class="option-label">공간 테마</span>
+          <div class="chip-group" id="space-chips"></div>
+        </div>
+        <p class="option-desc" id="space-hint" hidden></p>
+
+        <div class="option-row">
+          <span class="option-label">계절감</span>
+          <div class="segmented" id="season-toggle"></div>
+        </div>
+
+        <div class="option-row">
+          <span class="option-label">배경 사운드</span>
+          <div class="chip-group" id="bgsound-chips"></div>
+        </div>
       </section>
 
       <section class="generate-section">

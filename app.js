@@ -34,12 +34,136 @@ const MOODS = [
   { emoji: "📼", name: "복고풍의", desc: "retro, vintage, throwback" },
 ];
 
-const MOOD_CARD_COUNT = 5;
+const MOOD_CARD_COUNT = 8;
 const PROMPT_COUNT = 15;
 const STORAGE_KEY = "suno-agent-api-key";
 const HISTORY_KEY = "suno-agent-history";
 const MODEL = "claude-sonnet-4-6";
 const LOGIC_SCRIPT_PATH = "~/Desktop/suno-agent/logic_import.scpt";
+
+// ---- Instrument catalogue ---------------------------------------------------
+const INSTRUMENTS = [
+  { id: "strings", label: "🎻 현악기", desc: "strings (violin, viola, cello)" },
+  { id: "piano", label: "🎹 피아노", desc: "piano" },
+  { id: "guitar", label: "🎸 기타", desc: "guitar (acoustic or electric)" },
+  { id: "brass", label: "🎺 브라스", desc: "brass (trumpet, trombone, saxophone)" },
+  { id: "electronic", label: "🎛️ 전자악기", desc: "electronic synths and pads" },
+  { id: "percussion", label: "🥁 타악기", desc: "percussion and drums" },
+];
+
+// ---- Reference genre catalogue -----------------------------------------------
+const GENRES = [
+  { label: "Lo-fi", desc: "lo-fi" },
+  { label: "Jazz", desc: "jazz" },
+  { label: "Classical", desc: "classical" },
+  { label: "Ambient", desc: "ambient" },
+  { label: "Bossa Nova", desc: "bossa nova" },
+  { label: "Neo Soul", desc: "neo soul" },
+  { label: "R&B", desc: "R&B" },
+  { label: "Indie Folk", desc: "indie folk" },
+  { label: "Synthwave", desc: "synthwave" },
+  { label: "Cinematic", desc: "cinematic orchestral" },
+  { label: "Indie Pop", desc: "indie pop" },
+  { label: "Dream Pop", desc: "dream pop" },
+  { label: "Soft Pop", desc: "soft pop" },
+  { label: "City Pop", desc: "city pop" },
+  { label: "Bedroom Pop", desc: "bedroom pop" },
+  { label: "Funk", desc: "funk" },
+  { label: "Punk Funk", desc: "punk funk" },
+  { label: "Disco Funk", desc: "disco funk" },
+  { label: "G-Funk", desc: "G-funk" },
+  { label: "Jazz Funk", desc: "jazz funk" },
+  { label: "Afrobeat", desc: "afrobeat" },
+];
+
+// ---- Space-based theme catalogue ----------------------------------------------
+// Each space has a description used in the prompt, plus suggested
+// instruments/background sounds that get auto-selected as a recommendation.
+const SPACES = [
+  {
+    id: "cafe",
+    label: "☕ 카페",
+    desc: "a cozy café — warm, relaxed background music for conversation and lingering",
+    suggestInstruments: ["piano", "guitar"],
+    suggestBackground: ["cafe-noise"],
+  },
+  {
+    id: "study",
+    label: "📚 서재",
+    desc: "a quiet study or library — calm, focus-friendly music that stays unobtrusive",
+    suggestInstruments: ["piano", "strings"],
+    suggestBackground: [],
+  },
+  {
+    id: "bedroom",
+    label: "🛏️ 침실",
+    desc: "an intimate bedroom at night — soft, soothing music for winding down or sleep",
+    suggestInstruments: ["piano", "strings"],
+    suggestBackground: ["rain"],
+  },
+  {
+    id: "gym",
+    label: "💪 헬스장",
+    desc: "a gym workout session — high-energy, motivating and driving music",
+    suggestInstruments: ["electronic", "percussion"],
+    suggestBackground: [],
+  },
+  {
+    id: "drive",
+    label: "🚗 드라이브",
+    desc: "a road trip drive — smooth, open, free-flowing music for the road",
+    suggestInstruments: ["guitar", "electronic"],
+    suggestBackground: ["night-street"],
+  },
+  {
+    id: "outdoor",
+    label: "🌳 야외",
+    desc: "an outdoor open-air setting — fresh, natural and breezy music",
+    suggestInstruments: ["guitar", "percussion"],
+    suggestBackground: ["wind"],
+  },
+];
+
+// ---- Season catalogue -----------------------------------------------------------
+const SEASONS = [
+  { id: "none", label: "선택 안함", desc: "" },
+  { id: "spring", label: "🌸 봄", desc: "spring — fresh, blooming, light and hopeful" },
+  { id: "summer", label: "☀️ 여름", desc: "summer — bright, vibrant, energetic, sun-drenched" },
+  { id: "autumn", label: "🍁 가을", desc: "autumn — mellow, nostalgic, warm amber tones" },
+  { id: "winter", label: "❄️ 겨울", desc: "winter — cold, crisp, introspective, quiet" },
+];
+
+// ---- Background sound catalogue --------------------------------------------------
+const BACKGROUND_SOUNDS = [
+  { id: "rain", label: "🌧️ 비소리", desc: "soft rain ambience" },
+  { id: "wind", label: "🍃 바람소리", desc: "gentle wind ambience" },
+  { id: "cafe-noise", label: "☕ 카페소음", desc: "café chatter and ambient noise" },
+  { id: "night-street", label: "🌃 밤거리", desc: "distant night city street ambience" },
+  { id: "waves", label: "🌊 파도소리", desc: "ocean wave sounds" },
+  { id: "campfire", label: "🔥 캠프파이어", desc: "crackling campfire sounds" },
+];
+
+// ---- Instrument emphasis sliders --------------------------------------------------
+// Each slider ranges 0-4 (2 = neutral/default, untouched).
+const EMPHASIS_INSTRUMENTS = [
+  { id: "drums", label: "드럼", desc: "drums" },
+  { id: "piano", label: "피아노", desc: "piano" },
+  { id: "guitar", label: "기타", desc: "guitar" },
+  { id: "bass", label: "베이스", desc: "bass" },
+  { id: "strings", label: "스트링", desc: "strings" },
+  { id: "brass", label: "브라스", desc: "brass" },
+  { id: "synth", label: "신스", desc: "synths" },
+  { id: "percussion", label: "퍼커션", desc: "percussion" },
+  { id: "vocal", label: "보컬", desc: "vocals" },
+];
+
+const EMPHASIS_NEUTRAL = 2;
+const EMPHASIS_LEVEL_DESC = {
+  0: "almost entirely absent — avoid or strip out",
+  1: "minimal and subtle, kept in the background",
+  3: "prominent and emphasized in the mix",
+  4: "a dominant, central, driving element",
+};
 
 // ---- State -----------------------------------------------------------------
 let currentMoodCards = [];
@@ -49,6 +173,17 @@ let vocalMode = "with-vocals"; // "with-vocals" | "instrumental"
 let bpmMin = 80;
 let bpmMax = 120;
 let songLength = 2; // minutes: 1 | 2 | 3 | 4
+let structureMode = "off"; // "off" | "on" (기승전결)
+
+const selectedInstruments = new Set();
+const selectedGenres = new Set();
+const selectedBackgroundSounds = new Set();
+let selectedSpaceId = null;
+let selectedSeasonId = null;
+
+// instrument id -> emphasis level (0-4, 2 = neutral)
+const emphasisValues = {};
+EMPHASIS_INSTRUMENTS.forEach((i) => (emphasisValues[i.id] = EMPHASIS_NEUTRAL));
 
 // ---- Element refs -----------------------------------------------------------
 const apiKeyInput = document.getElementById("api-key-input");
@@ -68,6 +203,16 @@ const bpmMinInput = document.getElementById("bpm-min");
 const bpmMaxInput = document.getElementById("bpm-max");
 const bpmMinValue = document.getElementById("bpm-min-value");
 const bpmMaxValue = document.getElementById("bpm-max-value");
+
+const structureToggle = document.getElementById("structure-toggle");
+const structureDesc = document.getElementById("structure-desc");
+const instrumentChips = document.getElementById("instrument-chips");
+const genreChips = document.getElementById("genre-chips");
+const spaceChips = document.getElementById("space-chips");
+const spaceHint = document.getElementById("space-hint");
+const seasonToggle = document.getElementById("season-toggle");
+const bgsoundChips = document.getElementById("bgsound-chips");
+const emphasisGrid = document.getElementById("emphasis-grid");
 
 const logicFolderInput = document.getElementById("logic-folder-input");
 const logicGenerateBtn = document.getElementById("logic-generate-btn");
@@ -191,6 +336,11 @@ function setupStyleOptions() {
     songLength = Number(value);
   });
 
+  setupSegmentedGroup(structureToggle, (value) => {
+    structureMode = value;
+    structureDesc.hidden = structureMode !== "on";
+  });
+
   const syncBpmDisplays = () => {
     bpmMinValue.textContent = bpmMin;
     bpmMaxValue.textContent = bpmMax;
@@ -217,9 +367,131 @@ function setupStyleOptions() {
   syncBpmDisplays();
 }
 
+// ---- Theme expansion options (instruments / genres / space / season / bg sounds) ----
+// Multi-select chip group: clicking a chip toggles its id in `selectedSet`.
+function setupMultiChipGroup(container, items, selectedSet) {
+  container.innerHTML = "";
+  items.forEach((item) => {
+    const id = item.id ?? item.label;
+    const chip = document.createElement("button");
+    chip.type = "button";
+    chip.className = "chip";
+    chip.textContent = item.label;
+    chip.classList.toggle("selected", selectedSet.has(id));
+
+    chip.addEventListener("click", () => {
+      if (selectedSet.has(id)) {
+        selectedSet.delete(id);
+        chip.classList.remove("selected");
+      } else {
+        selectedSet.add(id);
+        chip.classList.add("selected");
+      }
+    });
+
+    container.appendChild(chip);
+  });
+}
+
+// Single-select chip group: clicking the active chip again deselects it.
+function setupSingleChipGroup(container, items, onSelect) {
+  container.innerHTML = "";
+  items.forEach((item) => {
+    const chip = document.createElement("button");
+    chip.type = "button";
+    chip.className = "chip";
+    chip.textContent = item.label;
+
+    chip.addEventListener("click", () => {
+      const wasSelected = chip.classList.contains("selected");
+      [...container.children].forEach((c) => c.classList.remove("selected"));
+      if (wasSelected) {
+        onSelect(null);
+      } else {
+        chip.classList.add("selected");
+        onSelect(item);
+      }
+    });
+
+    container.appendChild(chip);
+  });
+}
+
+function applySpaceRecommendation(space) {
+  if (!space) {
+    selectedSpaceId = null;
+    spaceHint.hidden = true;
+    return;
+  }
+
+  selectedSpaceId = space.id;
+
+  // Auto-select suggested instruments and background sounds as a starting recommendation.
+  space.suggestInstruments.forEach((id) => selectedInstruments.add(id));
+  space.suggestBackground.forEach((id) => selectedBackgroundSounds.add(id));
+  setupMultiChipGroup(instrumentChips, INSTRUMENTS, selectedInstruments);
+  setupMultiChipGroup(bgsoundChips, BACKGROUND_SOUNDS, selectedBackgroundSounds);
+
+  spaceHint.hidden = false;
+  spaceHint.textContent = `추천 테마: ${space.desc}`;
+}
+
+function setupThemeOptions() {
+  setupMultiChipGroup(instrumentChips, INSTRUMENTS, selectedInstruments);
+  setupMultiChipGroup(genreChips, GENRES, selectedGenres);
+  setupMultiChipGroup(bgsoundChips, BACKGROUND_SOUNDS, selectedBackgroundSounds);
+  setupSingleChipGroup(spaceChips, SPACES, applySpaceRecommendation);
+
+  // Season uses the same segmented style as vocal/length toggles.
+  seasonToggle.innerHTML = "";
+  SEASONS.forEach((season, index) => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "segment" + (index === 0 ? " active" : "");
+    btn.dataset.value = season.id;
+    btn.textContent = season.label;
+    seasonToggle.appendChild(btn);
+  });
+  setupSegmentedGroup(seasonToggle, (value) => {
+    selectedSeasonId = value === "none" ? null : value;
+  });
+}
+
+// ---- Instrument emphasis sliders --------------------------------------------------
+function setupEmphasisSliders() {
+  emphasisGrid.innerHTML = "";
+  EMPHASIS_INSTRUMENTS.forEach((instrument) => {
+    const row = document.createElement("div");
+    row.className = "emphasis-row";
+    row.innerHTML = `
+      <span class="emphasis-label">${instrument.label}</span>
+      <div class="emphasis-slider-wrap">
+        <span class="emphasis-end">Less</span>
+        <input type="range" min="0" max="4" step="1" value="${EMPHASIS_NEUTRAL}" />
+        <span class="emphasis-end">More</span>
+      </div>
+    `;
+
+    const slider = row.querySelector("input[type='range']");
+    slider.addEventListener("input", () => {
+      emphasisValues[instrument.id] = Number(slider.value);
+      row.classList.toggle("active", emphasisValues[instrument.id] !== EMPHASIS_NEUTRAL);
+    });
+
+    emphasisGrid.appendChild(row);
+  });
+}
+
 function describeStyleOptions(options) {
   const vocalLabel = options.vocal === "instrumental" ? "연주곡(보컬 없음)" : "보컬 있음";
-  return `${vocalLabel} · ${options.bpmMin}-${options.bpmMax} BPM · 약 ${options.length}분`;
+  const parts = [vocalLabel, `${options.bpmMin}-${options.bpmMax} BPM`, `약 ${options.length}분`];
+  if (options.structure === "on") parts.push("🎭 기승전결 구성");
+  if (options.instruments?.length) parts.push(`주 악기: ${options.instruments.join(", ")}`);
+  if (options.genres?.length) parts.push(`레퍼런스: ${options.genres.join(", ")}`);
+  if (options.space) parts.push(`공간: ${options.space}`);
+  if (options.season) parts.push(`계절: ${options.season}`);
+  if (options.backgroundSounds?.length) parts.push(`배경음: ${options.backgroundSounds.join(", ")}`);
+  return parts.join(" · ");
 }
 
 // ---- Claude API call ----------------------------------------------------------
@@ -233,6 +505,64 @@ function buildUserPrompt(selectedMoods) {
       ? 'All tracks must be instrumental — no vocals or lyrics of any kind. Explicitly include the word "instrumental" in each prompt.'
       : "All tracks should feature vocals — describe a fitting vocal style/timbre (e.g. \"breathy female vocals\", \"raspy male rock vocals\", \"layered choir harmonies\") in each prompt.";
 
+  const extraLines = [];
+
+  const instruments = INSTRUMENTS.filter((i) => selectedInstruments.has(i.id));
+  if (instruments.length > 0) {
+    extraLines.push(
+      `- Prominently feature the following instrument(s) across all tracks: ${instruments
+        .map((i) => i.desc)
+        .join(", ")}.`
+    );
+  }
+
+  const genres = GENRES.filter((g) => selectedGenres.has(g.label));
+  if (genres.length > 0) {
+    extraLines.push(
+      `- Use the following as reference genres, blending or adapting their stylistic traits with the mood(s) above: ${genres
+        .map((g) => g.desc)
+        .join(", ")}.`
+    );
+  }
+
+  const space = SPACES.find((s) => s.id === selectedSpaceId);
+  if (space) {
+    extraLines.push(`- These tracks will be played in this setting, so the overall vibe should suit it: ${space.desc}.`);
+  }
+
+  const season = SEASONS.find((s) => s.id === selectedSeasonId);
+  if (season) {
+    extraLines.push(`- Infuse each track with a seasonal atmosphere: ${season.desc}.`);
+  }
+
+  const backgroundSounds = BACKGROUND_SOUNDS.filter((b) => selectedBackgroundSounds.has(b.id));
+  if (backgroundSounds.length > 0) {
+    extraLines.push(
+      `- Each prompt must explicitly weave in the following ambient background sound element(s), described naturally as part of the soundscape (e.g. "with soft rain ambience in the background"): ${backgroundSounds
+        .map((b) => b.desc)
+        .join(", ")}.`
+    );
+  }
+
+  const emphasisLines = EMPHASIS_INSTRUMENTS.filter((i) => emphasisValues[i.id] !== EMPHASIS_NEUTRAL).map(
+    (i) => `${i.desc}: ${EMPHASIS_LEVEL_DESC[emphasisValues[i.id]]}`
+  );
+  if (emphasisLines.length > 0) {
+    extraLines.push(`- Adjust the instrumentation balance as follows: ${emphasisLines.join("; ")}.`);
+  }
+
+  const structureBlock =
+    structureMode === "on"
+      ? `
+
+Structure all ${PROMPT_COUNT} prompts as one cohesive playlist following the Korean narrative arc "기승전결" (Ki-Seung-Jeon-Gyeol — introduction, development, climax, resolution):
+- Tracks 1-4 (기, Introduction): Gently establish the core mood with calmer, simpler arrangements that set the tone.
+- Tracks 5-8 (승, Development): Build on the established mood by adding more layers, energy, or rhythmic complexity.
+- Tracks 9-12 (전, Climax): Reach the emotional or energetic peak with the fullest arrangements and most intense dynamics.
+- Tracks 13-15 (결, Resolution): Wind the energy back down for a satisfying, resolved close.
+Make the overall sequence feel like one continuous, intentional musical journey, with smooth transitions in energy and instrumentation between sections.`
+      : "";
+
   return `You are an expert prompt writer for Suno AI, the AI music generation tool.
 
 Based on the following mood(s), write exactly ${PROMPT_COUNT} unique music prompts in English, ready to paste into Suno's "Style of Music" field:
@@ -243,12 +573,12 @@ Style requirements that apply to EVERY prompt:
 - Tempo: roughly ${bpmMin}-${bpmMax} BPM
 - Track length: about ${songLength} minute${songLength > 1 ? "s" : ""} long
 - ${vocalLine}
-
+${extraLines.length > 0 ? extraLines.join("\n") + "\n" : ""}
 Additional requirements for each prompt:
 - A single descriptive line (roughly 15-40 words)
 - Include genre/sub-genre, mood, key instrumentation, and energy/dynamics
 - Make all ${PROMPT_COUNT} prompts distinct from one another (vary sub-genres, instruments, eras, textures) while staying true to the chosen mood(s) and the shared style requirements above
-- Written entirely in English, regardless of the language of the mood labels above
+- Written entirely in English, regardless of the language of the mood labels above${structureBlock}
 
 Respond with ONLY a valid JSON array of exactly ${PROMPT_COUNT} strings — no markdown, no code fences, no explanation. Example shape:
 ["first prompt text", "second prompt text", "..."]`;
@@ -333,12 +663,27 @@ function attachCopyHandler(button, textOrFn) {
 }
 
 // ---- Result rendering ----------------------------------------------------------
-function renderResults(prompts) {
+// 기승전결 (Ki-Seung-Jeon-Gyeol) section labels, keyed by the 0-based index where each section starts.
+const STRUCTURE_SECTIONS = {
+  0: "🌱 기 — 도입 (1-4번)",
+  4: "📈 승 — 전개 (5-8번)",
+  8: "🔥 전 — 전환/절정 (9-12번)",
+  12: "🍃 결 — 마무리 (13-15번)",
+};
+
+function renderResults(prompts, options = {}) {
   resultGrid.innerHTML = "";
   resultCount.textContent = `(${prompts.length}곡)`;
   resultSection.hidden = false;
 
   prompts.forEach((promptText, index) => {
+    if (options.structure === "on" && STRUCTURE_SECTIONS[index] !== undefined) {
+      const sectionHeader = document.createElement("div");
+      sectionHeader.className = "section-header";
+      sectionHeader.textContent = STRUCTURE_SECTIONS[index];
+      resultGrid.appendChild(sectionHeader);
+    }
+
     const card = document.createElement("div");
     card.className = "prompt-card";
     card.innerHTML = `
@@ -376,7 +721,21 @@ async function handleGenerate() {
     if (prompts.length === 0) {
       throw new Error("생성된 프롬프트가 없습니다. 다시 시도해주세요.");
     }
-    renderResults(prompts);
+
+    const options = {
+      vocal: vocalMode,
+      bpmMin,
+      bpmMax,
+      length: songLength,
+      structure: structureMode,
+      instruments: INSTRUMENTS.filter((i) => selectedInstruments.has(i.id)).map((i) => i.label),
+      genres: [...selectedGenres],
+      space: SPACES.find((s) => s.id === selectedSpaceId)?.label || "",
+      season: SEASONS.find((s) => s.id === selectedSeasonId)?.label || "",
+      backgroundSounds: BACKGROUND_SOUNDS.filter((b) => selectedBackgroundSounds.has(b.id)).map((b) => b.label),
+    };
+
+    renderResults(prompts, options);
     generateHint.textContent = `선택한 분위기: ${[...selectedMoodNames].join(", ")}`;
 
     saveHistoryEntry({
@@ -389,7 +748,7 @@ async function handleGenerate() {
         minute: "2-digit",
       }),
       moods: selectedMoods.map((m) => `${m.emoji} ${m.name}`),
-      options: { vocal: vocalMode, bpmMin, bpmMax, length: songLength },
+      options,
       prompts,
     });
     renderHistory();
@@ -522,6 +881,8 @@ generateBtn.addEventListener("click", handleGenerate);
 clearHistoryBtn.addEventListener("click", clearAllHistory);
 
 setupStyleOptions();
+setupThemeOptions();
+setupEmphasisSliders();
 setupTabs();
 setupLogicPro();
 

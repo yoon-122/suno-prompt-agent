@@ -37,15 +37,35 @@ on run argv
 		end try
 	end if
 
+	-- "~/Desktop/카페 음악 WAV" 처럼 "~"로 시작하는 경로를 실제 홈 폴더 경로로 펼쳐줍니다.
+	-- (POSIX file은 셸과 달리 "~"를 자동으로 확장하지 않습니다)
+	if targetPath is "~" then
+		set targetPath to POSIX path of (path to home folder)
+	else if targetPath starts with "~/" then
+		set targetPath to (POSIX path of (path to home folder)) & (text 3 thru -1 of targetPath)
+	end if
+
 	if targetPath ends with "/" then
 		set targetPath to text 1 thru -2 of targetPath
 	end if
 
+	-- 한글 등 비-ASCII 폴더/파일명을 안전하게 다루기 위해 문자열을 그대로 셸에 넘기는 대신
+	-- POSIX file → alias로 변환합니다. do shell script로 ls를 실행하면 셸의 로케일 설정에
+	-- 따라 한글 파일명이 깨질 수 있는데, alias/POSIX path 경로로는 이런 문제가 없습니다.
+	try
+		set targetAlias to (POSIX file targetPath) as alias
+	on error
+		display dialog "폴더를 찾을 수 없습니다:" & return & targetPath buttons {"확인"} default button 1
+		return
+	end try
+	-- alias에서 다시 POSIX path를 얻어 항상 정규화된 경로 문자열을 사용합니다 (끝의 "/" 제거).
+	set targetPath to text 1 thru -2 of (POSIX path of targetAlias)
+
 	set audioExtensions to {"mp3", "wav", "aif", "aiff", "m4a", "caf"}
 
-	-- `ls -1`은 폴더 안의 항목을 한 줄에 하나씩, 이름 순으로 정렬해 돌려줍니다.
-	set fileListText to do shell script "ls -1 " & quoted form of targetPath
-	set fileNames to paragraphs of fileListText
+	-- `list folder`는 Finder와 동일하게 macOS가 직접 항목을 읽어오므로
+	-- 셸을 거치는 `ls`와 달리 한글 파일명이 깨지지 않습니다.
+	set fileNames to list folder targetAlias without invisibles
 
 	set audioFiles to {}
 	repeat with oneName in fileNames
@@ -84,22 +104,26 @@ on hasAudioExtension(fileName, extensionList)
 	set AppleScript's text item delimiters to ""
 	if (count of nameParts) < 2 then return false
 	set ext to item -1 of nameParts as string
-	repeat with validExt in extensionList
-		if ext is validExt then return true
-	end repeat
-	return false
+	-- `repeat ... in list` yields references, not values, so a direct "is"
+	-- comparison against those references is always false. `contains`
+	-- compares values correctly.
+	return (extensionList contains ext)
 end hasAudioExtension
 
--- File > Import > Audio File… 메뉴를 열고, 열기 패널에 경로를 직접 입력해 가져오기
+-- 파일 > 가져오기 > 오디오 파일… 메뉴를 열고, 열기 패널에 경로를 직접 입력해 가져오기
+--
+-- 메뉴 이름은 시스템 언어에 따라 달라집니다. 이 macOS는 한국어로 설정되어 있어
+-- Logic Pro의 메뉴가 "파일 > 가져오기 > 오디오 파일…"로 표시됩니다 (영어 macOS라면
+-- "File > Import > Audio File…"). 시스템 언어를 바꿨다면 아래 메뉴 이름도 맞춰 바꾸세요.
 on importAudioFile(posixPath)
 	tell application "System Events"
 		tell process "Logic Pro"
 			set frontmost to true
-			click menu bar item "File" of menu bar 1
+			click menu bar item "파일" of menu bar 1
 			delay 0.3
-			click menu item "Import" of menu 1 of menu bar item "File" of menu bar 1
+			click menu item "가져오기" of menu 1 of menu bar item "파일" of menu bar 1
 			delay 0.3
-			click menu item "Audio File…" of menu 1 of menu item "Import" of menu 1 of menu bar item "File" of menu bar 1
+			click menu item "오디오 파일…" of menu 1 of menu item "가져오기" of menu 1 of menu bar item "파일" of menu bar 1
 			delay 1
 			-- "이동(Go to Folder)" 단축키로 파일 경로를 직접 입력해 선택
 			keystroke "g" using {command down, shift down}

@@ -401,6 +401,70 @@ h2 {
   border-color: transparent;
 }
 
+.option-desc {
+  margin: -8px 0 16px;
+  font-size: 0.78rem;
+  line-height: 1.6;
+  color: var(--text-dim);
+}
+
+.option-row:has(+ .option-desc) {
+  border-bottom: none;
+  padding-bottom: 8px;
+}
+
+.option-desc:last-child {
+  margin-bottom: 0;
+}
+
+.option-optional {
+  font-size: 0.78rem;
+  font-weight: 400;
+  color: var(--text-dim);
+}
+
+/* Chip groups (instruments / genres / space / background sounds) */
+.chip-group {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+.chip {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-weight: 600;
+}
+
+.chip:hover {
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+.chip.selected {
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  color: #14101f;
+  border-color: transparent;
+}
+
+/* Result section: 기승전결 structure headers */
+.section-header {
+  grid-column: 1 / -1;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--accent-2);
+  padding: 10px 0 2px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 4px;
+}
+
 .bpm-sliders {
   display: flex;
   gap: 28px;
